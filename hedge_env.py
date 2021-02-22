@@ -93,7 +93,7 @@ class HedgeEnv(gym.Env):
     def execute_trade_action(self, action):
         if self.cash_balance < 0.5:
         # We dont have enough to continue
-        return
+            return
 
         transaction_cost = self._get_trade_cost(action)
 
