@@ -19,7 +19,7 @@ class HedgeEnv(gym.Env):
         Hedge Training Environment
         """
         super().__init__()
-        self.df = env_config['df']
+        self.df = env_config["df"]
 
         self.opening_account_balance = env_config.get("opening_account_balance", 1)
         # Action: 1-dim value indicating a fraction amount of shares to Buy (0 to 1) or
@@ -30,15 +30,15 @@ class HedgeEnv(gym.Env):
         )
 
         self.observation_features = [
-            #"prices",
+            # "prices",
             "normalised_prices",
             "timestamp_sin",
-            "timestamp_cos"
+            "timestamp_cos",
         ]
-        self.seed = env_config.get('seed')
-        self.trade_cost = env_config.get('trade_cost', 0.005)
-        self.stop_loss = env_config.get('stop_loss', 0.05)
-        self.prices = self.df['prices']
+        self.seed = env_config.get("seed")
+        self.trade_cost = env_config.get("trade_cost", 0.005)
+        self.stop_loss = env_config.get("stop_loss", 0.05)
+        self.prices = self.df["prices"]
         self.horizon = env_config.get("window_size")
         self.observation_space = spaces.Box(
             low=0,
@@ -82,17 +82,17 @@ class HedgeEnv(gym.Env):
         # Get price info data table from input (env_config) df
         observation = (
             self.df.loc[
-            self.current_step : self.current_step + self.horizon,
-            self.observation_features,
+                self.current_step : self.current_step + self.horizon,
+                self.observation_features,
             ]
-                .to_numpy()
-                .T
+            .to_numpy()
+            .T
         )
         return observation
 
     def execute_trade_action(self, action):
         if self.cash_balance < 0.5:
-        # We dont have enough to continue
+            # We dont have enough to continue
             return
 
         transaction_cost = self._get_trade_cost(action)
@@ -112,28 +112,24 @@ class HedgeEnv(gym.Env):
 
         if order_type == "buy":
             if self.previous_action == action:
-                gain_diff = (current_price - previous_price)/previous_price * 100
+                gain_diff = (current_price - previous_price) / previous_price * 100
             else:
-                gain_diff = (previous_price - currrent_price)/current_price *100
-
+                gain_diff = (previous_price - current_price) / current_price * 100
 
         elif order_type == "sell":
 
             if self.previous_action == action:
-                gain_diff = (previous_price - current_price)/current_price * 100
+                gain_diff = (previous_price - current_price) / current_price * 100
             else:
-                gain_diff = (current_price - previous_price)/current_price *100
-
-
+                gain_diff = (current_price - previous_price) / current_price * 100
 
         self.trades.append(
             {
                 "type": "sell",
                 "step": self.current_step,
-                "previous_action": self.previous_action
+                "previous_action": self.previous_action,
                 "trade_cost": transaction_cost,
-                "proceeds": sale_proceeds,
-                "gain diff": gain_diff
+                "gain diff": gain_diff,
             }
         )
         # ordered_list = sorted(trades, key=lambda k: k['step'])
@@ -152,11 +148,11 @@ class HedgeEnv(gym.Env):
         # Update account value with any trade gains or loss
         self.account_value += cash_diff
 
-
     def _get_trade_cost(self, action):
         if action != self.previous_action:
             return self.trade_cost
         return 0
+
 
 if __name__ == "__main__":
     env = HedgeEnv()
