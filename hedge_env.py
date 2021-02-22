@@ -14,7 +14,7 @@ from gym import spaces
 
 
 class HedgeEnv(gym.Env):
-    def __init__(self, env_config: Dict = env_config):
+    def __init__(self, env_config):
         """
         Hedge Training Environment
         """
