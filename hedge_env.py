@@ -20,7 +20,6 @@ class HedgeEnv(gym.Env):
         """
         super().__init__()
         self.df = env_config["df"]
-
         self.opening_account_balance = env_config.get("opening_account_balance", 1.0)
         # Action: 1-dim value indicating a fraction amount of shares to Buy (0 to 1) or
         # sell (-1 to 0). The fraction is taken on the allowable number of
@@ -39,15 +38,18 @@ class HedgeEnv(gym.Env):
         self.trade_cost = env_config.get("trade_cost", 0.005)
         self.stop_loss = env_config.get("stop_loss", 0.05)
         self.prices = self.df["prices"]
-        self.horizon = env_config.get("window_size", len(self.df))
+        self.horizon = env_config.get("horizon", len(self.df))
+        self.window_size = env_config["window_size"]
+        self.frame_bound = env_config.get("frame_bound", self.horizon)
         self.observation_space = spaces.Box(
             low=0,
             high=1,
-            shape=(len(self.observation_features), self.horizon + 1),
+            shape=(len(self.observation_features), self.window_size + 1),
             dtype=np.float,
         )
         self.order_size = env_config.get("order_size", 1)
         self.viz = None  # Visualizer
+        # self._process_data()
 
     def step(self, action):
         # Execute one step within the trading environment
@@ -56,7 +58,7 @@ class HedgeEnv(gym.Env):
         self.current_step += 1
 
         reward = self.account_value - self.opening_account_balance  # Profit (loss)
-        done = (self.horizon - self.current_step) <= 1
+        done = (self.horizon - (self.current_step + self.window_size)) <= 1
         obs = self.get_observation()
         return obs, reward, done, {}
 
@@ -74,11 +76,16 @@ class HedgeEnv(gym.Env):
         # Render the environment to the screen
         pprint.pprint(self.trades[100:])
 
+    # def get_observation(self):
+    #     return self.signal_features[
+    #         self.current_step : self.current_step + self.window_size
+    #     ]
+
     def get_observation(self):
         # Get price info data table from input (env_config) df
         observation = (
             self.df.loc[
-                self.current_step : self.current_step + self.horizon,
+                self.current_step : self.current_step + self.window_size,
                 self.observation_features,
             ]
             .to_numpy()
@@ -147,6 +154,22 @@ class HedgeEnv(gym.Env):
         if action != self.previous_action:
             return self.trade_cost
         return 0
+
+    def _process_data(self):
+        prices = self.df.loc[:, "prices"].to_numpy()
+        normalised_prices = self.df.loc[:, "normalised_prices"].to_numpy()
+        ts_sin = self.df.loc[:, "timestamp_sin"].to_numpy()
+        ts_cos = self.df.loc[:, "timestamp_cos"].to_numpy()
+
+        # prices[self.frame_bound[0] - self.window_size]  # validate index (TODO: Improve validation)
+        prices = prices[0 : self.horizon]
+        normalised_prices = normalised_prices[0 : self.horizon]
+        ts_sin = ts_sin[0 : self.horizon]
+        ts_cos = ts_sin[0 : self.horizon]
+
+        diff = np.insert(np.diff(prices), 0, 0)
+        self.signal_features = np.column_stack((diff, ts_sin, ts_cos))
+        self.prices = prices
 
 
 if __name__ == "__main__":
