@@ -67,7 +67,7 @@ class HedgeEnv(gym.Env):
         self.account_value = self.opening_account_balance
         self.current_step = 1
         self.trades = []
-        self.previous_action = 0
+        self.previous_action = "hold"
 
         return self.get_observation()
 
@@ -103,7 +103,7 @@ class HedgeEnv(gym.Env):
             # Hold position; No trade to be executed
             # If already in a trade no trade cost is incurred
             # We just update the previous action value
-            self.previous_action = action
+            self.previous_action = "hold"
             return
 
         order_type = "buy" if action > 0 else "sell"
@@ -112,14 +112,14 @@ class HedgeEnv(gym.Env):
         previous_price = self.df.loc[self.current_step - 1, "prices"]
 
         if order_type == "buy":
-            if self.previous_action == action:
+            if self.previous_action == order_type:
                 gain_diff = ((current_price - previous_price) / previous_price) * 100
             else:
                 gain_diff = ((previous_price - current_price) / current_price) * 100
 
         elif order_type == "sell":
 
-            if self.previous_action == action:
+            if self.previous_action == order_type:
                 gain_diff = ((previous_price - current_price) / current_price) * 100
             else:
                 gain_diff = ((current_price - previous_price) / current_price) * 100
@@ -142,7 +142,7 @@ class HedgeEnv(gym.Env):
         # have been stopped out
 
         # Update the previous action value
-        self.previous_action = action
+        self.previous_action = order_type
 
         # Extract any transaction costs
         self.account_value -= transaction_cost
