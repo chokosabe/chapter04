@@ -149,7 +149,7 @@ class HedgeEnv(gym.Env):
         self.account_value -= transaction_cost
         # Update account value with any trade gains or loss
         self.account_value += gain_diff
-
+        self.render()
     def _get_trade_cost(self, action):
         if action != self.previous_action:
             return self.trade_cost
