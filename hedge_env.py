@@ -3,7 +3,6 @@
 # Chapter 4, TensorFlow 2 Reinforcement Learning Cookbook | Praveen Palanisamy
 
 import os
-import random
 import pprint
 from typing import Dict
 
@@ -74,7 +73,7 @@ class HedgeEnv(gym.Env):
 
     def render(self, **kwargs):
         # Render the environment to the screen
-        pprint.pprint(self.trades[100:])
+        pprint.pprint(self.trades[-100:])
 
     # def get_observation(self):
     #     return self.signal_features[
@@ -150,6 +149,7 @@ class HedgeEnv(gym.Env):
         # Update account value with any trade gains or loss
         self.account_value += gain_diff
         self.render()
+
     def _get_trade_cost(self, action):
         if action != self.previous_action:
             return self.trade_cost
