@@ -67,7 +67,7 @@ class HedgeEnv(gym.Env):
         self.account_value = self.opening_account_balance
         self.current_step = 1
         self.trades = []
-        self.previous_action = "hold"
+        self.previous_action = 0
 
         return self.get_observation()
 
@@ -97,7 +97,6 @@ class HedgeEnv(gym.Env):
             # We dont have enough to continue
             return
 
-        transaction_cost = self._get_trade_cost(action)
 
         if action == 0:  # Indicates "Hold" action
             # Hold position; No trade to be executed
@@ -107,6 +106,9 @@ class HedgeEnv(gym.Env):
             return
 
         order_type = "buy" if action > 0 else "sell"
+        
+        transaction_cost = self._get_trade_cost(order_type)
+        
         # Assign the previous price and current price
         current_price = self.df.loc[self.current_step, "prices"]
         previous_price = self.df.loc[self.current_step - 1, "prices"]
@@ -172,10 +174,10 @@ class HedgeEnv(gym.Env):
         self.prices = prices
 
 
-if __name__ == "__main__":
-    env = HedgeEnv()
-    obs = env.reset()
-    for _ in range(600):
-        action = env.action_space.sample()
-        next_obs, reward, done, _ = env.step(action)
-        env.render()
+#if __name__ == "__main__":
+#    env = HedgeEnv()
+#    obs = env.reset()
+#    for _ in range(600):
+#        action = env.action_space.sample()
+#        next_obs, reward, done, _ = env.step(action)
+#        env.render()
