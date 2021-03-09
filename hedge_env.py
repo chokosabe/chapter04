@@ -73,7 +73,7 @@ class HedgeEnv(gym.Env):
 
     def render(self, **kwargs):
         # Render the environment to the screen
-        pprint.pprint(self.trades[-100:])
+        pprint.pprint(self.trades[-5:])
 
     # def get_observation(self):
     #     return self.signal_features[
@@ -126,15 +126,6 @@ class HedgeEnv(gym.Env):
             else:
                 gain_diff = ((current_price - previous_price) / current_price) * 100
 
-        self.trades.append(
-            {
-                "type": "sell",
-                "step": self.current_step,
-                "previous_action": self.previous_action,
-                "trade_cost": transaction_cost,
-                "gain diff": gain_diff,
-            }
-        )
         # ordered_list = sorted(trades, key=lambda k: k['step'])
         # Take the last key
         # Loop through from the end
@@ -150,7 +141,19 @@ class HedgeEnv(gym.Env):
         self.account_value -= transaction_cost
         # Update account value with any trade gains or loss
         self.account_value += gain_diff
-        self.render()
+
+        self.trades.append(
+            {
+                "type": "sell",
+                "step": self.current_step,
+                "previous_action": self.previous_action,
+                "trade_cost": transaction_cost,
+                "gain diff": gain_diff,
+                "account_value": self.account_value
+            }
+        )
+
+        #self.render()
 
     def _get_trade_cost(self, action):
         if action != self.previous_action:
