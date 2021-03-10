@@ -24,7 +24,7 @@ class HedgeEnv(gym.Env):
         # sell (-1 to 0). The fraction is taken on the allowable number of
         # shares that can be bought or sold based on the account balance (no margin).
         self.action_space = spaces.Box(
-            low=np.array([-1]), high=np.array([1]), dtype=np.float
+            low=np.array([-1]), high=np.array([1]), dtype=np.float32
         )
 
         self.observation_features = [
