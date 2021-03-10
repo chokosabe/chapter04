@@ -113,14 +113,13 @@ class HedgeEnv(gym.Env):
         current_price = self.df.loc[self.current_step, "prices"]
         previous_price = self.df.loc[self.current_step - 1, "prices"]
 
-        if order_type == "buy":
-            if self.previous_action == order_type:
-                gain_diff = ((current_price - previous_price) / previous_price) * 100
+        if self.previous_action == "buy":
+            #if self.previous_action == order_type:
+            gain_diff = ((current_price - previous_price) / previous_price) * 100
 
-        elif order_type == "sell":
-
-            if self.previous_action == order_type:
-                gain_diff = ((previous_price - current_price) / current_price) * 100
+        elif self.previous_action == "sell":
+            #if self.previous_action == order_type:
+            gain_diff = ((previous_price - current_price) / current_price) * 100
         else:
             return 
         # ordered_list = sorted(trades, key=lambda k: k['step'])

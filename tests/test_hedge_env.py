@@ -42,6 +42,9 @@ class TestHedgeEnv:
         env = HedgeEnv(env_config)
         env.reset()
         action = env.action_space.sample()
+        import pdb
+
+        pdb.set_trace()
         next_obs, reward, done, _ = env.step(action)
         assert done == True
         # next_obs, reward, done, _ = env.step(action)
