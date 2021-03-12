@@ -41,11 +41,12 @@ class HedgeEnv(gym.Env):
         self.window_size = env_config["window_size"]
         self.frame_bound = env_config.get("frame_bound", self.horizon)
         self.observation_space = spaces.Box(
-            low=0,
-            high=1,
+            low=-np.inf,
+            high=np.inf,
             shape=(len(self.observation_features), self.window_size + 1),
-            dtype=np.float,
+            dtype=np.float32,
         )
+                # spaces
         self.order_size = env_config.get("order_size", 1)
         self.viz = None  # Visualizer
         # self._process_data()

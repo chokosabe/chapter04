@@ -175,3 +175,4 @@ webgym>=1.0.6
 widgetsnbextension==3.5.1
 wrapt==1.12.1
 yarl==1.6.3
+ray[rllib]
