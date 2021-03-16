@@ -310,7 +310,7 @@ class SAC(object):
 
             action = self.act(cur_state, use_random=use_random)  # determine action
             next_state, reward, done, _ = self.env.step(action[0])  # act on env
-            #self.env.render()
+            self.env.render()
 
             self.remember(cur_state, action, reward, next_state, done)  # add to memory
             self.replay()  # train models through memory replay
