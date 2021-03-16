@@ -57,7 +57,7 @@ class HedgeEnv(gym.Env):
 
         self.current_step += 1
 
-        reward = self.account_value - self.opening_account_balance  # Profit (loss)
+        reward = self.account_value #- self.opening_account_balance  # Profit (loss)
         done = (self.horizon - (self.current_step + self.window_size)) <= 1
         obs = self.get_observation()
         return obs, reward, done, {}
@@ -94,9 +94,9 @@ class HedgeEnv(gym.Env):
         return observation
 
     def execute_trade_action(self, action):
-        if self.account_value < 0.5:
+        #if self.account_value < 0.5:
             # We dont have enough to continue
-            return
+        #    return
 
 
         if action == 0:  # Indicates "Hold" action
@@ -135,9 +135,9 @@ class HedgeEnv(gym.Env):
         self.previous_action = order_type
 
         # Extract any transaction costs
-        self.account_value -= transaction_cost
+        self.account_value = self.account_value - transaction_cost
         # Update account value with any trade gains or loss
-        self.account_value += gain_diff
+        self.account_value = self.account_value + gain_diff
 
         self.trades.append(
             {
