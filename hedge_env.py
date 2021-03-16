@@ -116,11 +116,11 @@ class HedgeEnv(gym.Env):
 
         if self.previous_action == "buy":
             #if self.previous_action == order_type:
-            gain_diff = ((current_price - previous_price) / previous_price) * 100
+            gain_diff = ((current_price - previous_price) / previous_price) * 10000
 
         elif self.previous_action == "sell":
             #if self.previous_action == order_type:
-            gain_diff = ((previous_price - current_price) / current_price) * 100
+            gain_diff = ((previous_price - current_price) / current_price) * 10000
         else:
             return 
         # ordered_list = sorted(trades, key=lambda k: k['step'])
